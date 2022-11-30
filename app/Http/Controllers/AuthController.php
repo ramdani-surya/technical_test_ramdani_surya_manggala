@@ -28,9 +28,30 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->firstOrFail();
 
         return response()->json([
-            "message" => "Login success.",
-            "data"    => $user,
-            "token"   => $request->user()->createToken($user->email)->plainTextToken,
+            "message"      => "Login success.",
+            "data"         => $user,
+            "access_token" => $user->createToken($user->email)->plainTextToken,
+            "token_type"   => 'Bearer',
+        ]);
+    }
+
+    public function register(Request $request)
+    {
+        $request->validate([
+            'email'    => ['required', 'email', 'unique:users'],
+            'password' => ['required', 'min:6'],
+        ]);
+
+        $user = User::create([
+            'email'    => $request->email,
+            'password' => bcrypt($request->email),
+        ]);
+
+        return response()->json([
+            "message"      => "Register success.",
+            "data"         => $user,
+            "access_token" => $user->createToken($user->email)->plainTextToken,
+            "token_type"   => 'Bearer',
         ]);
     }
 }
