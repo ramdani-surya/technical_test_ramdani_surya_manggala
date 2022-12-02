@@ -97,11 +97,15 @@ class CategoryProductController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  App\Models\CategoryProduct $categoryProduct
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(CategoryProduct $categoryProduct)
     {
-        //
+        $categoryProduct->delete();
+
+        return response()->json([
+            "message"      => "Category product succesfully deleted.",
+        ]);
     }
 }
