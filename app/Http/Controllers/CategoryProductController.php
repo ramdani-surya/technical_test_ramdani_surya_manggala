@@ -49,7 +49,10 @@ class CategoryProductController extends Controller
      */
     public function show($id)
     {
-        //
+        return response()->json([
+            "message"      => "Success.",
+            "data"         => CategoryProduct::find($id) ?: null,
+        ]);
     }
 
     /**
