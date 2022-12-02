@@ -28,7 +28,29 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'category_product_id' => ['required', 'integer', 'exists:category_products,id'],
+            'name'                => ['required', 'string'],
+            'price'               => ['required', 'integer', 'min:0'],
+            'image'               => ['nullable', 'image', 'max:2048'],
+        ]);
+
+        if ($request->hasFile('image')) {
+            $file  = $request->file('image');
+            $image = time() . "_" . $file->getClientOriginalName();
+            $dir   = public_path('images/products');
+
+            $file->move($dir, $image);
+        } else {
+            $image = null;
+        }
+
+        $request->image = $image;
+
+        return response()->json([
+            "message"      => "Product succesfully stored.",
+            "data"         => Product::create($request->all()),
+        ], 201);
     }
 
     /**
