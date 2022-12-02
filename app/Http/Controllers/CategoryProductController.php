@@ -38,7 +38,14 @@ class CategoryProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => ['required', 'string', 'unique:category_products,name']
+        ]);
+
+        return response()->json([
+            "message"      => "Category product succesfully stored.",
+            "data"         => CategoryProduct::create($request->all()),
+        ], 201);
     }
 
     /**
