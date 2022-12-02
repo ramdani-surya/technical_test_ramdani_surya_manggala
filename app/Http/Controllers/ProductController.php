@@ -71,12 +71,36 @@ class ProductController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Product $product)
     {
-        //
+        $request->validate([
+            'category_product_id' => ['required', 'integer', 'exists:category_products,id'],
+            'name'                => ['required', 'string'],
+            'price'               => ['required', 'integer', 'min:0'],
+            'image'               => ['nullable', 'image', 'max:2048'],
+        ]);
+
+        if ($request->hasFile('image')) {
+
+            if (file_exists($oldImage = public_path("images/products/$product->image")))
+                unlink($oldImage);
+
+            $file  = $request->file('image');
+            $image = time() . "_" . $file->getClientOriginalName();
+            $dir   = public_path('images/products');
+
+            $file->move($dir, $image);
+
+            $request->image = $image;
+        }
+
+        return response()->json([
+            "message"      => "Product succesfully updated.",
+            "data"         => $product->update($request->all()),
+        ]);
     }
 
     /**
