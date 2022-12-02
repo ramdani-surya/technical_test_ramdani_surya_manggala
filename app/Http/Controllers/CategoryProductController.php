@@ -77,12 +77,21 @@ class CategoryProductController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\CategoryProduct $categoryProduct
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, CategoryProduct $categoryProduct)
     {
-        //
+        $request->validate([
+            'name' => ['required', 'string', "unique:category_products,name,$categoryProduct->id"]
+        ]);
+
+        $categoryProduct->update($request->all());
+
+        return response()->json([
+            "message"      => "Category product succesfully updated.",
+            "data"         => $categoryProduct,
+        ]);
     }
 
     /**
