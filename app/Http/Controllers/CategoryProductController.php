@@ -21,16 +21,6 @@ class CategoryProductController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -42,9 +32,13 @@ class CategoryProductController extends Controller
             'name' => ['required', 'string', 'unique:category_products,name']
         ]);
 
+        $categoryProduct = new CategoryProduct;
+        $categoryProduct->name = $request->name;
+        $categoryProduct->save();
+
         return response()->json([
             "message"      => "Category product succesfully stored.",
-            "data"         => CategoryProduct::create($request->all()),
+            "data"         => $categoryProduct,
         ], 201);
     }
 
@@ -63,17 +57,6 @@ class CategoryProductController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -86,7 +69,8 @@ class CategoryProductController extends Controller
             'name' => ['required', 'string', "unique:category_products,name,$categoryProduct->id"]
         ]);
 
-        $categoryProduct->update($request->all());
+        $categoryProduct->name = $request->name;
+        $categoryProduct->save();
 
         return response()->json([
             "message"      => "Category product succesfully updated.",
