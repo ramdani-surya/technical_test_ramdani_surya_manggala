@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -35,15 +36,9 @@ class ProductController extends Controller
             'image'               => ['nullable', 'image', 'max:2048'],
         ]);
 
-        if ($request->hasFile('image')) {
-            $file  = $request->file('image');
-            $image = time() . "_" . $file->getClientOriginalName();
-            $dir   = public_path('images/products');
-
-            $file->move($dir, $image);
-        } else {
-            $image = null;
-        }
+        $image = ($request->hasFile('image'))
+        ? $request->file('image')->store('products')
+        : null;
 
         $product = new Product;
         $product->category_product_id = $request->category_product_id;
@@ -88,24 +83,22 @@ class ProductController extends Controller
             'image'               => ['nullable', 'image', 'max:2048'],
         ]);
 
+        // gunakan path image sebelumnya (yang sudah diupload)
+        $image = $product->image;
+
+        // jika user input image baru
         if ($request->hasFile('image')) {
+            // ganti path image dengan yang baru
+            $image = $request->file('image')->store('products');
 
-            if (file_exists($oldImage = public_path("images/products/$product->image")))
-                unlink($oldImage);
-
-            $file  = $request->file('image');
-            $image = time() . "_" . $file->getClientOriginalName();
-            $dir   = public_path('images/products');
-
-            $file->move($dir, $image);
-
-            // perubahan value image dilakukan disini
-            $product->image = $image;
+            // hapus file image lama
+            Storage::delete($product->image);
         }
 
         $product->category_product_id = $request->category_product_id;
         $product->name                = $request->name;
         $product->price               = $request->price;
+        $product->image               = $image;
         $product->save();
 
         return response()->json([
@@ -123,7 +116,7 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         if ($product->image)
-            unlink(public_path("images/products/$product->image"));
+            Storage::delete($product->image);
 
         $product->delete();
 
