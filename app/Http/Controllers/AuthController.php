@@ -41,10 +41,10 @@ class AuthController extends Controller
             'password' => ['required', 'min:6'],
         ]);
 
-        $user = User::create([
-            'email'    => $request->email,
-            'password' => bcrypt($request->email),
-        ]);
+        $user = new User;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
+        $user->save();
 
         return response()->json([
             "message"      => "Register success.",
