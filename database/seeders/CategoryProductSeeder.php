@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\CategoryProduct;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Faker\Factory as Faker;
 
 class CategoryProductSeeder extends Seeder
@@ -17,14 +17,11 @@ class CategoryProductSeeder extends Seeder
     public function run()
     {
         $faker = Faker::create();
-        $categories = [['name'    => 'furnitur']];
 
-        for ($i=0; $i < 4; $i++) {
-            $categories[] = [ 'name' => $faker->word()];
+        for ($i=0; $i < 5; $i++) {
+            $categoryProduct = new CategoryProduct;
+            $categoryProduct->name = $faker->word();
+            $categoryProduct->save();
         }
-
-        DB::table('category_products')->insert(
-            $categories
-        );
     }
 }
