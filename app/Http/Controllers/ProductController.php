@@ -45,11 +45,16 @@ class ProductController extends Controller
             $image = null;
         }
 
-        $request->image = $image;
+        $product = new Product;
+        $product->category_product_id = $request->category_product_id;
+        $product->name                = $request->name;
+        $product->price               = $request->price;
+        $product->image               = $image;
+        $product->save();
 
         return response()->json([
             "message"      => "Product succesfully stored.",
-            "data"         => Product::create($request->all()),
+            "data"         => $product,
         ], 201);
     }
 
@@ -94,12 +99,18 @@ class ProductController extends Controller
 
             $file->move($dir, $image);
 
-            $request->image = $image;
+            // perubahan value image dilakukan disini
+            $product->image = $image;
         }
+
+        $product->category_product_id = $request->category_product_id;
+        $product->name                = $request->name;
+        $product->price               = $request->price;
+        $product->save();
 
         return response()->json([
             "message"      => "Product succesfully updated.",
-            "data"         => $product->update($request->all()),
+            "data"         => $product,
         ]);
     }
 
